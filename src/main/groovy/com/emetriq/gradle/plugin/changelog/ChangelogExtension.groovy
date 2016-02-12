@@ -1,4 +1,4 @@
-package com.emetriq.gradle.changelog
+package com.emetriq.gradle.plugin.changelog
 
 /**
  * Created on 12/02/16.
