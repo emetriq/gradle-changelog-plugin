@@ -12,5 +12,8 @@ repositories{
 dependencies {
     compile gradleApi()
     compile 'com.netflix.nebula:nebula-release-plugin:4.0.1'
+    testCompile('com.netflix.nebula:nebula-test:4.0.0') {
+        exclude group: 'org.codehaus.groovy'
+    }
 }
 

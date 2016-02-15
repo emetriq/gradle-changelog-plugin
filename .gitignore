@@ -18,3 +18,4 @@ checkstyle/
 cacheFileTreeWalker
 out/
 release
+.*.gradle-test*
