@@ -61,23 +61,25 @@ This line will be later replaced during the gradle release run by the actual rel
 * Feature B added
 * Bug B fixed
 
-... many more release notes
-
 ## 1.14.0  /  2016-02-16
 * Feature A added
 * Bug A fixed
+
+... many more release notes
 ```
  
 
 # Building
 
 ## Using the plugin in your build.gradle
+Build script snippet for use in all Gradle versions:
 ```groovy
 buildscript {
     
     repositories {
-        mavenLocal()
-        jcenter()
+        maven {
+          url "https://plugins.gradle.org/m2/"
+        }
         // add your repos here
     }
             
@@ -90,6 +92,12 @@ buildscript {
 apply plugin: 'emetriq.changelog-release'
 ```
 
+Build script snippet for new, incubating, plugin mechanism introduced in Gradle 2.1:
+```groovy
+plugins {
+  id "emetriq.changelog-release" version "0.8.0"
+}
+```
 The `changelog-release-plugin` already contains the dependency to the nebula release plugin, so you are done here with the plugin configuration. 
 
 ## Extension provided
