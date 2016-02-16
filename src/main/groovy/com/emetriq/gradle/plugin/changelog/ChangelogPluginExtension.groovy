@@ -11,6 +11,6 @@ class ChangelogPluginExtension {
     /** The headline for the changes after the last release */
     String replaceToken = '## [NEXT RELEASE]'
 
-    /** when true, the build fails when no changelog placeholder exists in*/
+    /** when true, the build fails when no changelog placeholder (i.e. replaceToken) exists in the changelog file */
     Boolean forceChangelog = true
 }
