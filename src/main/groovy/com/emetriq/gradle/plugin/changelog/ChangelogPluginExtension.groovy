@@ -3,7 +3,7 @@ package com.emetriq.gradle.plugin.changelog
 /**
  * Created on 12/02/16.
  */
-class ChangelogExtension {
+class ChangelogPluginExtension {
 
     /** The file containing the changelog (relative to project root) */
     String changelogFile = './changelog.md'

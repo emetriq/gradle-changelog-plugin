@@ -3,24 +3,35 @@ group = 'com.emetriq.gradle'
 // This is a groovy project
 apply plugin: 'groovy'
 
-// Adding tasks for deploying and installing this project to a nexus repository
+// Adding tasks for deploying and installing this project to a maven repository
 apply plugin: 'maven'
 
 buildscript {
-    repositories{ jcenter() }
-    dependencies { classpath 'com.netflix.nebula:nebula-release-plugin:4.0.1' }
+    repositories { jcenter() }
+
+    dependencies {
+        classpath 'com.netflix.nebula:nebula-release-plugin:4.0.1'
+        classpath 'ca.cutterslade.gradle:gradle-dependency-analyze:1.0.3'
+    }
 }
 
-// Of corse we use the nebula release plugin to create our own releases
+// Of course we use the nebula release plugin to create our own releases
 apply plugin: 'nebula.nebula-release'
 
-repositories{ jcenter() }
+// check dependencies
+apply plugin: 'ca.cutterslade.analyze'
+
+repositories { jcenter() }
 
 dependencies {
     compile gradleApi()
     compile 'com.netflix.nebula:nebula-release-plugin:4.0.1'
-    testCompile('com.netflix.nebula:nebula-test:4.0.0') {
+    compile 'org.ajoberstar:grgit:1.5.0'
+    compile 'org.ajoberstar:gradle-git:1.4.1'
+
+    testCompile ('org.spockframework:spock-core:1.0-groovy-2.4') {
         exclude group: 'org.codehaus.groovy'
     }
+    testCompile'com.netflix.nebula:nebula-test:4.0.0'
 }
 
