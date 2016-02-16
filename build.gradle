@@ -48,6 +48,6 @@ pluginBundle {
   }
 }
 
-if (hasProperty("publishPlugin") ? publishPlugin : false) {
+if (hasProperty("publishPlugin") ? publishPlugin.toBoolean() : false) {
     project.tasks.release.finalizedBy(publishPlugins)
 }
