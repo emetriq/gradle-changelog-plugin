@@ -18,3 +18,4 @@ cacheFileTreeWalker
 out/
 release
 .*.gradle-test*
+.idea/
