@@ -35,7 +35,7 @@ dependencies {
 // For publishing the plugin
 
 pluginBundle {
-  website = 'http://www.emetriq.com/'
+  website = 'https://github.com/emetriq/gradle-changelog-plugin'
   vcsUrl = 'https://github.com/emetriq/gradle-changelog-plugin'
   description = 'Creating a semi-automatic changelog on top of nebula release plugin'
   tags = ['changelog', 'release', 'emetriq', 'versioning']
