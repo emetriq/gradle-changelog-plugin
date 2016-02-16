@@ -6,7 +6,6 @@
 target/
 classes/
 *.log
-.*
 *.iml
 *.ipr
 *.iws
