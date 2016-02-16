@@ -47,3 +47,7 @@ pluginBundle {
     }
   }
 }
+
+if (hasProperty("publishPlugin") ? publishPlugin : false) {
+    project.tasks.release.finalizedBy(publishPlugins)
+}
