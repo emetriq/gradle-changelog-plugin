@@ -1,8 +1,6 @@
 release-changelog-plugin
 ========================
 
-[![Build Status](https://travis-ci.org/tobi-sh/release-changelog-plugin.svg?branch=master)](https://travis-ci.org/tobi-sh/release-changelog-plugin)
-
 This is a simple gradle plugin creating a semiautomatic changelog by extending the [Nebula release plugin](https://github.com/nebula-plugins/nebula-release-plugin)
 
 # Objective
@@ -11,9 +9,32 @@ release number and the release information you provided will be created. In case
 
 # Using the plugin
 
-Right now you have to install the 
+## Where to get the plugin
+Right now you have to install the plugin to your local maven repository or to your own nexus. We are working on publishing this plugin to https://plugins.gradle.org/. 
+
+## Using the plugin in your build.gradle
+
+    buildscript {
+        
+        repositories {
+            mavenLocal()
+            jcenter()
+            // add your repos here
+        }
+                
+                
+        dependencies {
+            classpath 'com.emetriq.gradle:changelog-release-plugin:*'
+        }
+    }
+    
+    apply plugin: 'emetriq.changelog-release'
+    
+This will add a couple 
 
 # Typical workflow
+
+
 
 # Building
 
