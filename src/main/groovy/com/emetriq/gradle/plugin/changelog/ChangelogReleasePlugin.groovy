@@ -69,7 +69,8 @@ class ChangelogReleasePlugin implements Plugin<Project> {
 
             def currentChangeLog = changeLogFile().text
 
-            if ((!currentChangeLog.contains(versionPlaceholder()) || currentChangeLog.contains(NEXT_RELEASE_TEXT)) && forceChangelog()) {
+            if ((!currentChangeLog.contains(versionPlaceholder()) || currentChangeLog.readLines().take(2).contains(NEXT_RELEASE_TEXT))
+                    && forceChangelog()) {
                 throw new GradleException("no new entries in ${changeLogFileName()}")
             } else {
                 def newChangeLog = currentChangeLog.replace(versionPlaceholder(), versionHeadline)
