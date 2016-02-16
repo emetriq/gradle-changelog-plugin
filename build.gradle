@@ -1,13 +1,20 @@
 group = 'com.emetriq.gradle'
 
-version = '0.0.2'
-
+// This is a groovy project
 apply plugin: 'groovy'
+
+// Adding tasks for deploying and installing this project to a nexus repository
 apply plugin: 'maven'
 
-repositories{
-    jcenter()
+buildscript {
+    repositories{ jcenter() }
+    dependencies { classpath 'com.netflix.nebula:nebula-release-plugin:4.0.1' }
 }
+
+// Of corse we use the nebula release plugin to create our own releases
+apply plugin: 'nebula.nebula-release'
+
+repositories{ jcenter() }
 
 dependencies {
     compile gradleApi()
