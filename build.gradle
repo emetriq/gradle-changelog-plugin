@@ -1,25 +1,22 @@
-group = 'com.emetriq.gradle'
-
-// This is a groovy project
-apply plugin: 'groovy'
-
-// Adding tasks for deploying and installing this project to a maven repository
-apply plugin: 'maven'
-
 buildscript {
     repositories { jcenter() }
 
     dependencies {
-        classpath 'com.netflix.nebula:nebula-release-plugin:4.0.1'
         classpath 'ca.cutterslade.gradle:gradle-dependency-analyze:1.0.3'
     }
 }
 
-// Of course we use the nebula release plugin to create our own releases
-apply plugin: 'nebula.nebula-release'
+plugins {
+  id "com.gradle.plugin-publish" version "0.9.3"
+  id "nebula.nebula-release" version "4.0.1"
+  id "maven"
+  id "groovy"
+}
+
+group = 'com.emetriq.gradle'
 
 // check dependencies
-apply plugin: 'ca.cutterslade.analyze'
+apply plugin: "ca.cutterslade.analyze"
 
 repositories { jcenter() }
 
@@ -32,6 +29,21 @@ dependencies {
     testCompile ('org.spockframework:spock-core:1.0-groovy-2.4') {
         exclude group: 'org.codehaus.groovy'
     }
-    testCompile'com.netflix.nebula:nebula-test:4.0.0'
+    testCompile 'com.netflix.nebula:nebula-test:4.0.0'
 }
 
+// For publishing the plugin
+
+pluginBundle {
+  website = 'http://www.emetriq.com/'
+  vcsUrl = 'https://github.com/emetriq/gradle-changelog-plugin'
+  description = 'Creating a semi-automatic changelog on top of nebula release plugin'
+  tags = ['changelog', 'release', 'emetriq', 'versioning']
+
+  plugins {
+    greetingsPlugin {
+      id = 'emetriq.changelog-release'
+      displayName = 'Changelog Release Plugin'
+    }
+  }
+}
