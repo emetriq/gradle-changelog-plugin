@@ -7,10 +7,10 @@ buildscript {
 }
 
 plugins {
-  id "com.gradle.plugin-publish" version "0.9.3"
-  id "nebula.nebula-release" version "4.0.1"
-  id "maven"
-  id "groovy"
+    id "com.gradle.plugin-publish" version "0.9.3"
+    id "nebula.nebula-release" version "4.0.1"
+    id "maven"
+    id "groovy"
 }
 
 group = 'com.emetriq.gradle'
@@ -26,7 +26,7 @@ dependencies {
     compile 'org.ajoberstar:grgit:1.5.0'
     compile 'org.ajoberstar:gradle-git:1.4.1'
 
-    testCompile ('org.spockframework:spock-core:1.0-groovy-2.4') {
+    testCompile('org.spockframework:spock-core:1.0-groovy-2.4') {
         exclude group: 'org.codehaus.groovy'
     }
     testCompile 'com.netflix.nebula:nebula-test:4.0.0'
@@ -35,17 +35,22 @@ dependencies {
 // For publishing the plugin
 
 pluginBundle {
-  website = 'https://github.com/emetriq/gradle-changelog-plugin'
-  vcsUrl = 'https://github.com/emetriq/gradle-changelog-plugin'
-  description = 'Creating a semi-automatic changelog on top of nebula release plugin'
-  tags = ['changelog', 'release', 'emetriq', 'versioning']
+    website = 'https://github.com/emetriq/gradle-changelog-plugin'
+    vcsUrl = 'https://github.com/emetriq/gradle-changelog-plugin'
+    description = 'Creating a semi-automatic changelog on top of nebula release plugin'
+    tags = ['changelog', 'release', 'emetriq', 'versioning']
 
-  plugins {
-    greetingsPlugin {
-      id = 'emetriq.changelog-release'
-      displayName = 'Changelog Release Plugin'
+    plugins {
+        changeReleasePlugin {
+            id = 'emetriq.changelog-release'
+            displayName = 'Changelog Release Plugin'
+        }
     }
-  }
+
+    mavenCoordinates {
+        groupId = project.group
+        artifactId = project.name
+    }
 }
 
 if (hasProperty("publishPlugin") ? publishPlugin.toBoolean() : false) {
