@@ -51,3 +51,21 @@ pluginBundle {
 if (hasProperty("publishPlugin") ? publishPlugin.toBoolean() : false) {
     project.tasks.release.finalizedBy(publishPlugins)
 }
+
+def nexusUserName = project.hasProperty('all.nexus.deployment.user') ? project.getProperties()['all.nexus.deployment.user'] : ''
+def nexusUserPasswd = project.hasProperty('all.nexus.deployment.passwd') ? project.getProperties()['all.nexus.deployment.passwd'] : ''
+def nexusUrl = project.hasProperty('all.nexus.deployment.releaseUrl') ? project.getProperties()['all.nexus.deployment.releaseUrl'] : ''
+
+uploadArchives {
+    repositories.mavenDeployer {
+        configuration = configurations.archives
+        repository(id: 'nexus', url: nexusUrl) {
+            authentication(userName: nexusUserName, password: nexusUserPasswd)
+        }
+    }
+}
+
+
+if (!nexusUrl.isEmpty()) {
+    project.tasks.release.finalizedBy(uploadArchives)
+}
