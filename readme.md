@@ -1,11 +1,13 @@
 release-changelog-plugin
 ========================
 
+[![Build Status](https://travis-ci.org/emetriq/gradle-changelog-plugin.svg?branch=master)](https://travis-ci.org/emetriq/gradle-changelog-plugin)
+
 This is a simple gradle plugin creating a semiautomatic changelog on top of the [Nebula release plugin](https://github.com/nebula-plugins/nebula-release-plugin)
 
 # Objective
 This plugin helps (and forces) you to maintain a changelog file.
-* In contrast to other changelog plugins, the changelog is not filled with git commit comments, but has to be maintained by a human. 
+* In contrast to other changelog plugins, the changelog is not filled with git commit comments, but has to be maintained by a human.
 * If you build a release (using the great Nebula release plugin), a new entry at the changelog.md with the current release number.
 * If you forgot to update your changelog.md, the release build fails. (You can override this behavior by using the [forceChangelog](#extension-provided) flag in the extension)
 
@@ -67,7 +69,7 @@ This line will be later replaced during the gradle release run by the actual rel
 
 ... many more release notes
 ```
- 
+
 
 # Building
 
@@ -75,15 +77,15 @@ This line will be later replaced during the gradle release run by the actual rel
 Build script snippet for use in all Gradle versions:
 ```groovy
 buildscript {
-    
+
     repositories {
         maven {
           url "https://plugins.gradle.org/m2/"
         }
         // add your repos here
     }
-            
-            
+
+
     dependencies {
         classpath 'com.emetriq.gradle:changelog-release-plugin:*'
     }
@@ -98,7 +100,7 @@ plugins {
   id "emetriq.changelog-release" version "0.8.0"
 }
 ```
-The `changelog-release-plugin` already contains the dependency to the nebula release plugin, so you are done here with the plugin configuration. 
+The `changelog-release-plugin` already contains the dependency to the nebula release plugin, so you are done here with the plugin configuration.
 
 ## Extension provided
 You can alter the plugin's behavior using the changelog extension:
@@ -114,6 +116,6 @@ changelog {
 
     /** when true, the build fails when no changelog placeholder (i.e. replaceToken) exists in the changelog file */
     Boolean forceChangelog = true
-    
+
 }
 ```
