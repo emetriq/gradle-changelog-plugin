@@ -80,14 +80,14 @@ buildscript {
 
     repositories {
         maven {
-          url "https://plugins.gradle.org/m2/"
+          url 'https://plugins.gradle.org/m2/'
         }
         // add your repos here
     }
 
 
     dependencies {
-        classpath 'com.emetriq.gradle:changelog-release-plugin:*'
+        classpath 'gradle.plugin.com.emetriq.gradle:changelog-release-plugin:0.10.1'
     }
 }
 
@@ -97,7 +97,7 @@ apply plugin: 'emetriq.changelog-release'
 Build script snippet for new, incubating, plugin mechanism introduced in Gradle 2.1:
 ```groovy
 plugins {
-  id "emetriq.changelog-release" version "0.8.0"
+  id "emetriq.changelog-release" version "0.10.1"
 }
 ```
 The `changelog-release-plugin` already contains the dependency to the nebula release plugin, so you are done here with the plugin configuration.
