@@ -20,6 +20,10 @@ apply plugin: "ca.cutterslade.analyze"
 
 repositories { jcenter() }
 
+sourceCompatibility = JavaVersion.VERSION_1_7
+targetCompatibility = JavaVersion.VERSION_1_7
+
+
 dependencies {
     compile gradleApi()
     compile 'com.netflix.nebula:nebula-release-plugin:4.0.1'
