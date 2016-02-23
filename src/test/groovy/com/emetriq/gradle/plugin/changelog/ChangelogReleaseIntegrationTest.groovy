@@ -19,7 +19,6 @@ package com.emetriq.gradle.plugin.changelog
 
 import com.energizedwork.spock.extensions.TempDirectory
 import nebula.test.IntegrationSpec
-import nebula.test.functional.ExecutionResult
 import org.ajoberstar.grgit.Grgit
 
 /**
@@ -96,6 +95,24 @@ class ChangelogReleaseIntegrationTest extends IntegrationSpec {
 
         when:
         runTasks('final') // final is the nebula-release task
+
+        then:
+        // no replacement expected
+        File changelog = new File(projectDir, "changelog.md")
+        !changelog.text.contains('0.3.0')
+        changelog.text.startsWith('## [NEXT RELEASE]\n... Major improvements')
+    }
+
+    def 'snapshot release: no changelog'() {
+        given:
+        buildFile << '''
+            apply plugin: 'emetriq.changelog-release'
+        '''.stripIndent()
+        git.add(patterns: ["."])
+        git.commit(message: 'added a cool plugin')
+
+        when:
+        runTasks('snapshot')
 
         then:
         // no replacement expected
