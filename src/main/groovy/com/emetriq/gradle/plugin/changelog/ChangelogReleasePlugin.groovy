@@ -56,10 +56,6 @@ class ChangelogReleasePlugin implements Plugin<Project> {
         def versionPlaceholder = { changelogExtension.replaceToken }
         def forceChangelog = { changelogExtension.forceChangelog }
 
-        def isRelease = {
-            project.getGradle().getTaskGraph().getAllTasks().contains(project.tasks.final)
-        }
-
         def changeLogFile = { new File(project.projectDir, changeLogFileName()) }
         def overwriteChangelog = { text ->
             changeLogFile().newWriter().withWriter { w -> w << text }
@@ -67,58 +63,50 @@ class ChangelogReleasePlugin implements Plugin<Project> {
 
         // task to replace the version placeholder for the current release with the actual version number
         def finalizeChangelog = project.task(FINALIZE_CHANGELOG_TASK) << {
-            if (isRelease()) {
-                def today = new Date().format("yyyy-MM-dd")
-                newVersion = project.version.toString() // version from nebula-release
-                versionHeadline = "## $newVersion  /  $today"
+            def today = new Date().format("yyyy-MM-dd")
+            newVersion = project.version.toString() // version from nebula-release
+            versionHeadline = "## $newVersion  /  $today"
 
-                def currentChangeLog = changeLogFile().text
+            def currentChangeLog = changeLogFile().text
 
-                if ((!currentChangeLog.contains(versionPlaceholder()) || currentChangeLog.readLines().take(2).contains(NEXT_RELEASE_TEXT))
-                        && forceChangelog()) {
-                    throw new GradleException("no new entries in ${changeLogFileName()}")
-                } else {
-                    def newChangeLog = currentChangeLog.replace(versionPlaceholder(), versionHeadline)
-
-                    overwriteChangelog(newChangeLog)
-                    git.add(patterns: [changeLogFileName(), '.'])
-                    git.commit(message: "changelog for $newVersion")
-                    logger.info("changelog finalized")
-                }
+            if ((!currentChangeLog.contains(versionPlaceholder()) || currentChangeLog.readLines().take(2).contains(NEXT_RELEASE_TEXT))
+                    && forceChangelog()) {
+                throw new GradleException("no new entries in ${changeLogFileName()}")
             } else {
-                logger.info("no release build -> no changelog")
+                def newChangeLog = currentChangeLog.replace(versionPlaceholder(), versionHeadline)
+
+                overwriteChangelog(newChangeLog)
+                git.add(patterns: [changeLogFileName(), '.'])
+                git.commit(message: "changelog for $newVersion")
+                logger.info("changelog finalized")
             }
         }
 
         // task to add a new version placeholder for the next release
         def newChangelogEntry = project.task(NEW_CHANGELOG_ENTRY) << {
-            if (isRelease()) {
-                def releaseChangeLog = changeLogFile().text
+            def releaseChangeLog = changeLogFile().text
 
-                def replaceWith = """|${versionPlaceholder()}
+            def replaceWith = """|${versionPlaceholder()}
                          |$NEXT_RELEASE_TEXT
                          |
                          |$versionHeadline""".stripMargin()
 
-                def newChangeLog = releaseChangeLog.replace(versionHeadline, replaceWith)
+            def newChangeLog = releaseChangeLog.replace(versionHeadline, replaceWith)
 
-                if (releaseChangeLog != newChangeLog) {
-                    overwriteChangelog(newChangeLog)
+            if (releaseChangeLog != newChangeLog) {
+                overwriteChangelog(newChangeLog)
 
-                    git.add(patterns: [changeLogFileName(), '.'])
-                    git.commit(message: "changelog placeholder added")
-                    git.push()
-                    logger.info("new changelog placeholder added")
-                } else {
-                    logger.warn("no changes in ${changeLogFileName()}")
-                } // no changes
+                git.add(patterns: [changeLogFileName(), '.'])
+                git.commit(message: "changelog placeholder added")
+                git.push()
+                logger.info("new changelog placeholder added")
             } else {
-                logger.info("no release build -> no changelog")
-            } // no release
+                logger.warn("no changes in ${changeLogFileName()}")
+            } // no changes
         }
 
-        project.tasks.release.dependsOn finalizeChangelog
-        project.tasks.release.finalizedBy newChangelogEntry
+        project.tasks.final.dependsOn finalizeChangelog
+        project.tasks.final.finalizedBy newChangelogEntry
     }
 
 }
