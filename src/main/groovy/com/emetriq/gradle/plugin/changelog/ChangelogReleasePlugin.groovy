@@ -32,10 +32,12 @@ import org.gradle.api.logging.Logging
 class ChangelogReleasePlugin implements Plugin<Project> {
     static Logger logger = Logging.getLogger(ChangelogReleasePlugin)
 
+    static final String CHECK_CHANGELOG = 'checkChangelog'
     static final CHANGELOG_EXT_NAME = 'changelog'
     static final String FINALIZE_CHANGELOG_TASK = 'finalizeChangelog'
     static final String NEW_CHANGELOG_ENTRY = 'newChangelogEntry'
     static final NEXT_RELEASE_TEXT = '... add new changes here!'
+
 
     private String newVersion = null
     private String versionHeadline = null
@@ -59,6 +61,18 @@ class ChangelogReleasePlugin implements Plugin<Project> {
         def changeLogFile = { new File(project.projectDir, changeLogFileName()) }
         def overwriteChangelog = { text ->
             changeLogFile().newWriter().withWriter { w -> w << text }
+        }
+
+        def checkChangelog = project.task(CHECK_CHANGELOG) << {
+            def currentChangeLog = changeLogFile().text
+            if (project.gradle.taskGraph.hasTask(":final")
+                    || project.gradle.taskGraph.hasTask(":${project.name}:final")
+                    || project.gradle.startParameter.taskNames.contains(CHECK_CHANGELOG)) {
+                if ((!currentChangeLog.contains(versionPlaceholder()) || currentChangeLog.readLines().take(2).contains(NEXT_RELEASE_TEXT))
+                        && forceChangelog()) {
+                    throw new GradleException("no new entries in ${changeLogFileName()}")
+                }
+            }
         }
 
         // task to replace the version placeholder for the current release with the actual version number
@@ -105,6 +119,7 @@ class ChangelogReleasePlugin implements Plugin<Project> {
             } // no changes
         }
 
+        project.tasks.prepare.dependsOn checkChangelog
         project.tasks.final.dependsOn finalizeChangelog
         project.tasks.final.finalizedBy newChangelogEntry
     }
