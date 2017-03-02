@@ -50,7 +50,7 @@ class ChangelogReleasePluginTest extends ProjectSpec {
         project.plugins.apply(ChangelogReleasePlugin)
 
         then:
-        project.tasks.prepare.getDependsOn().contains(project.tasks.checkChangelog)
+        project.tasks.finalizeChangelog.getDependsOn().contains(project.tasks.checkChangelog)
         project.tasks.final.getDependsOn().contains(project.tasks.finalizeChangelog)
         project.tasks.final.getFinalizedBy().getDependencies(null).contains(project.tasks.newChangelogEntry)
     }

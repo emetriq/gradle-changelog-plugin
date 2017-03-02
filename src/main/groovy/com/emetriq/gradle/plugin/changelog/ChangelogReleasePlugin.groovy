@@ -119,8 +119,8 @@ class ChangelogReleasePlugin implements Plugin<Project> {
             } // no changes
         }
 
-        //project.tasks.build.dependsOn checkChangelog
         project.tasks.final.dependsOn finalizeChangelog
+        project.tasks.finalizeChangelog.dependsOn checkChangelog
         project.tasks.final.finalizedBy newChangelogEntry
     }
 
