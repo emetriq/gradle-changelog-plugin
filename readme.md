@@ -14,12 +14,14 @@ This plugin helps (and forces) you to maintain a changelog file.
 # Using the plugin
 The usage is the same as of the the Nebula release pugin.
 
-## Prerequisites
+## Initialization
 A file named `changelog.md` has to be in the root project directory and contain this line:
 ```
 ## [NEXT RELEASE]
 ```
 This line will be later replaced during the gradle release run by the actual release number and date.
+
+The file can also be created with the ```initChangelog``` task. This task will fail if the file aready exists.
 
 # Typical workflow
 * maintain your `changelog.md`
