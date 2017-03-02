@@ -32,10 +32,12 @@ import org.gradle.api.logging.Logging
 class ChangelogReleasePlugin implements Plugin<Project> {
     static Logger logger = Logging.getLogger(ChangelogReleasePlugin)
 
+    static final String CHECK_CHANGELOG = 'checkChangelog'
     static final CHANGELOG_EXT_NAME = 'changelog'
     static final String FINALIZE_CHANGELOG_TASK = 'finalizeChangelog'
     static final String NEW_CHANGELOG_ENTRY = 'newChangelogEntry'
     static final NEXT_RELEASE_TEXT = '... add new changes here!'
+
 
     private String newVersion = null
     private String versionHeadline = null
@@ -61,8 +63,20 @@ class ChangelogReleasePlugin implements Plugin<Project> {
             changeLogFile().newWriter().withWriter { w -> w << text }
         }
 
+        def checkChangelog = project.task(CHECK_CHANGELOG).doFirst( {
+            if (project.gradle.taskGraph.hasTask(":final")
+                    || project.gradle.taskGraph.hasTask(":${project.name}:final")
+                    || project.gradle.startParameter.taskNames.contains(CHECK_CHANGELOG)) {
+                def currentChangeLog = changeLogFile().text
+                if ((!currentChangeLog.contains(versionPlaceholder()) || currentChangeLog.readLines().take(2).contains(NEXT_RELEASE_TEXT))
+                        && forceChangelog()) {
+                    throw new GradleException("no new entries in ${changeLogFileName()}")
+                }
+            }
+        })
+
         // task to replace the version placeholder for the current release with the actual version number
-        def finalizeChangelog = project.task(FINALIZE_CHANGELOG_TASK) << {
+        def finalizeChangelog = project.task(FINALIZE_CHANGELOG_TASK).doLast {
             def today = new Date().format("yyyy-MM-dd")
             newVersion = project.version.toString() // version from nebula-release
             versionHeadline = "## $newVersion  /  $today"
@@ -83,7 +97,7 @@ class ChangelogReleasePlugin implements Plugin<Project> {
         }
 
         // task to add a new version placeholder for the next release
-        def newChangelogEntry = project.task(NEW_CHANGELOG_ENTRY) << {
+        def newChangelogEntry = project.task(NEW_CHANGELOG_ENTRY).doLast {
             def releaseChangeLog = changeLogFile().text
 
             def replaceWith = """|${versionPlaceholder()}
@@ -106,6 +120,7 @@ class ChangelogReleasePlugin implements Plugin<Project> {
         }
 
         project.tasks.final.dependsOn finalizeChangelog
+        project.tasks.finalizeChangelog.dependsOn checkChangelog
         project.tasks.final.finalizedBy newChangelogEntry
     }
 

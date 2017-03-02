@@ -25,7 +25,7 @@ import org.ajoberstar.grgit.Grgit
 /**
  * Created on 15/02/16.
  */
-class ChangelogReleaseIntegrationTest extends IntegrationSpec {
+class FailChangelogReleaseIntegrationTest extends IntegrationSpec {
 
     Grgit git
 
@@ -40,7 +40,7 @@ class ChangelogReleaseIntegrationTest extends IntegrationSpec {
         git = Grgit.init(dir: projectDir)
         File changelog = new File(projectDir, 'changelog.md')
         changelog << '''## [NEXT RELEASE]
-                    |... Major improvements
+                    |... add new changes here!
                     |
                     |## 0.2.0  /  2016-02-12
                     |* Bugfixes from hell
@@ -63,7 +63,7 @@ class ChangelogReleaseIntegrationTest extends IntegrationSpec {
         }
     }
 
-    def 'run release task'() {
+    def 'run checkChangelog task fails on no changelog'() {
         given:
         buildFile << '''
             apply plugin: 'emetriq.changelog-release'
@@ -72,56 +72,39 @@ class ChangelogReleaseIntegrationTest extends IntegrationSpec {
         git.commit(message: 'added a cool plugin')
 
         when:
-        def result = runTasks('final') // final is the nebula-release task
+        ExecutionResult result = runTasks('checkChangelog')
+
+        then:
+        !result.success
+    }
+
+    def 'run final task fails on no changelog'() {
+        given:
+        buildFile << '''
+            apply plugin: 'emetriq.changelog-release'
+        '''.stripIndent()
+        git.add(patterns: ["."])
+        git.commit(message: 'added a cool plugin')
+
+        when:
+        ExecutionResult result = runTasks('final')
+
+        then:
+        !result.success
+    }
+
+    def 'run build task does not fail on no changelog'() {
+        given:
+        buildFile << '''
+            apply plugin: 'emetriq.changelog-release'
+        '''.stripIndent()
+        git.add(patterns: ["."])
+        git.commit(message: 'added a cool plugin')
+
+        when:
+        ExecutionResult result = runTasks('build')
 
         then:
         result.success
-
-        File changelog = new File(projectDir, "changelog.md")
-        changelog.text.contains('0.3.0')
-        changelog.text.startsWith('## [NEXT RELEASE]\n... add new changes here!')
     }
-
-    def 'forceChangelog flag test'() {
-        given:
-        buildFile << '''
-            apply plugin: 'emetriq.changelog-release'
-
-            changelog {
-                forceChangelog = false
-                replaceToken = '## [please don't replace me]'
-            }
-
-        '''.stripIndent()
-        git.add(patterns: ["."])
-        git.commit(message: 'added a cool plugin')
-
-        when:
-        runTasks('final') // final is the nebula-release task
-
-        then:
-        // no replacement expected
-        File changelog = new File(projectDir, "changelog.md")
-        !changelog.text.contains('0.3.0')
-        changelog.text.startsWith('## [NEXT RELEASE]\n... Major improvements')
-    }
-
-    def 'snapshot release: no changelog'() {
-        given:
-        buildFile << '''
-            apply plugin: 'emetriq.changelog-release'
-        '''.stripIndent()
-        git.add(patterns: ["."])
-        git.commit(message: 'added a cool plugin')
-
-        when:
-        runTasks('snapshot')
-
-        then:
-        // no replacement expected
-        File changelog = new File(projectDir, "changelog.md")
-        !changelog.text.contains('0.3.0')
-        changelog.text.startsWith('## [NEXT RELEASE]\n... Major improvements')
-    }
-
 }

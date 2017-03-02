@@ -40,6 +40,7 @@ class ChangelogReleasePluginTest extends ProjectSpec {
         then:
         project.tasks.find { it.name == 'newChangelogEntry' }
         project.tasks.find { it.name == 'finalizeChangelog' }
+        project.tasks.find { it.name == 'checkChangelog' }
     }
 
     def 'check task order'() {
@@ -49,6 +50,7 @@ class ChangelogReleasePluginTest extends ProjectSpec {
         project.plugins.apply(ChangelogReleasePlugin)
 
         then:
+        project.tasks.finalizeChangelog.getDependsOn().contains(project.tasks.checkChangelog)
         project.tasks.final.getDependsOn().contains(project.tasks.finalizeChangelog)
         project.tasks.final.getFinalizedBy().getDependencies(null).contains(project.tasks.newChangelogEntry)
     }
