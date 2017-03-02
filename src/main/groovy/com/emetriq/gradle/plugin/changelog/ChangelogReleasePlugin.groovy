@@ -32,11 +32,12 @@ import org.gradle.api.logging.Logging
 class ChangelogReleasePlugin implements Plugin<Project> {
     static Logger logger = Logging.getLogger(ChangelogReleasePlugin)
 
+    static final String INIT_CHANGELOG = 'initChangelog'
     static final String CHECK_CHANGELOG = 'checkChangelog'
-    static final CHANGELOG_EXT_NAME = 'changelog'
+    static final String CHANGELOG_EXT_NAME = 'changelog'
     static final String FINALIZE_CHANGELOG_TASK = 'finalizeChangelog'
     static final String NEW_CHANGELOG_ENTRY = 'newChangelogEntry'
-    static final NEXT_RELEASE_TEXT = '... add new changes here!'
+    static final String NEXT_RELEASE_TEXT = '... add new changes here!'
 
 
     private String newVersion = null
@@ -65,11 +66,11 @@ class ChangelogReleasePlugin implements Plugin<Project> {
 
         def checkChangelog = project.task(CHECK_CHANGELOG).doFirst( {
             if (project.gradle.taskGraph.hasTask(":final")
-                    || project.gradle.taskGraph.hasTask(":${project.name}:final")
-                    || project.gradle.startParameter.taskNames.contains(CHECK_CHANGELOG)) {
+            || project.gradle.taskGraph.hasTask(":${project.name}:final")
+            || project.gradle.startParameter.taskNames.contains(CHECK_CHANGELOG)) {
                 def currentChangeLog = changeLogFile().text
                 if ((!currentChangeLog.contains(versionPlaceholder()) || currentChangeLog.readLines().take(2).contains(NEXT_RELEASE_TEXT))
-                        && forceChangelog()) {
+                && forceChangelog()) {
                     throw new GradleException("no new entries in ${changeLogFileName()}")
                 }
             }
@@ -84,7 +85,7 @@ class ChangelogReleasePlugin implements Plugin<Project> {
             def currentChangeLog = changeLogFile().text
 
             if ((!currentChangeLog.contains(versionPlaceholder()) || currentChangeLog.readLines().take(2).contains(NEXT_RELEASE_TEXT))
-                    && forceChangelog()) {
+            && forceChangelog()) {
                 throw new GradleException("no new entries in ${changeLogFileName()}")
             } else {
                 def newChangeLog = currentChangeLog.replace(versionPlaceholder(), versionHeadline)
@@ -93,6 +94,17 @@ class ChangelogReleasePlugin implements Plugin<Project> {
                 git.add(patterns: [changeLogFileName(), '.'])
                 git.commit(message: "changelog for $newVersion")
                 logger.info("changelog finalized")
+            }
+        }
+
+        def initChangeLog = project.task(INIT_CHANGELOG).doLast {
+            if (!changeLogFile().exists()) {
+                changeLogFile().createNewFile()
+                def newChangelogContents = """${versionPlaceholder()}
+                                             |$NEXT_RELEASE_TEXT""".stripMargin()
+                overwriteChangelog(newChangelogContents)
+            } else {
+                throw new GradleException("${changeLogFile().name} already exists")
             }
         }
 
