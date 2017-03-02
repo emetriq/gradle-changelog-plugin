@@ -41,6 +41,7 @@ class ChangelogReleasePluginTest extends ProjectSpec {
         project.tasks.find { it.name == 'newChangelogEntry' }
         project.tasks.find { it.name == 'finalizeChangelog' }
         project.tasks.find { it.name == 'checkChangelog' }
+        project.tasks.find { it.name == 'initChangelog' }
     }
 
     def 'check task order'() {
