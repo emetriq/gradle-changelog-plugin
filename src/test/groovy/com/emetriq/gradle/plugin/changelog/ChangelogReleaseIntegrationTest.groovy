@@ -72,9 +72,11 @@ class ChangelogReleaseIntegrationTest extends IntegrationSpec {
         git.commit(message: 'added a cool plugin')
 
         when:
-        runTasks('final') // final is the nebula-release task
+        def result = runTasks('final') // final is the nebula-release task
 
         then:
+        result.success
+
         File changelog = new File(projectDir, "changelog.md")
         changelog.text.contains('0.3.0')
         changelog.text.startsWith('## [NEXT RELEASE]\n... add new changes here!')

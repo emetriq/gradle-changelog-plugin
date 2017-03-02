@@ -63,20 +63,20 @@ class ChangelogReleasePlugin implements Plugin<Project> {
             changeLogFile().newWriter().withWriter { w -> w << text }
         }
 
-        def checkChangelog = project.task(CHECK_CHANGELOG) << {
-            def currentChangeLog = changeLogFile().text
+        def checkChangelog = project.task(CHECK_CHANGELOG).doFirst( {
             if (project.gradle.taskGraph.hasTask(":final")
                     || project.gradle.taskGraph.hasTask(":${project.name}:final")
                     || project.gradle.startParameter.taskNames.contains(CHECK_CHANGELOG)) {
+                def currentChangeLog = changeLogFile().text
                 if ((!currentChangeLog.contains(versionPlaceholder()) || currentChangeLog.readLines().take(2).contains(NEXT_RELEASE_TEXT))
                         && forceChangelog()) {
                     throw new GradleException("no new entries in ${changeLogFileName()}")
                 }
             }
-        }
+        })
 
         // task to replace the version placeholder for the current release with the actual version number
-        def finalizeChangelog = project.task(FINALIZE_CHANGELOG_TASK) << {
+        def finalizeChangelog = project.task(FINALIZE_CHANGELOG_TASK).doLast {
             def today = new Date().format("yyyy-MM-dd")
             newVersion = project.version.toString() // version from nebula-release
             versionHeadline = "## $newVersion  /  $today"
@@ -97,7 +97,7 @@ class ChangelogReleasePlugin implements Plugin<Project> {
         }
 
         // task to add a new version placeholder for the next release
-        def newChangelogEntry = project.task(NEW_CHANGELOG_ENTRY) << {
+        def newChangelogEntry = project.task(NEW_CHANGELOG_ENTRY).doLast {
             def releaseChangeLog = changeLogFile().text
 
             def replaceWith = """|${versionPlaceholder()}
@@ -119,7 +119,7 @@ class ChangelogReleasePlugin implements Plugin<Project> {
             } // no changes
         }
 
-        project.tasks.prepare.dependsOn checkChangelog
+        //project.tasks.build.dependsOn checkChangelog
         project.tasks.final.dependsOn finalizeChangelog
         project.tasks.final.finalizedBy newChangelogEntry
     }

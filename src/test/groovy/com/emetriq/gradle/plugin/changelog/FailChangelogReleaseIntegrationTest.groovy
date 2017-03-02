@@ -74,8 +74,6 @@ class FailChangelogReleaseIntegrationTest extends IntegrationSpec {
         when:
         ExecutionResult result = runTasks('checkChangelog')
 
-        println result.success
-
         then:
         !result.success
     }
@@ -105,7 +103,6 @@ class FailChangelogReleaseIntegrationTest extends IntegrationSpec {
 
         when:
         ExecutionResult result = runTasks('build')
-        println result.success
 
         then:
         result.success
