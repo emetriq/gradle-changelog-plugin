@@ -17,9 +17,7 @@
 
 package com.emetriq.gradle.plugin.changelog
 
-import com.energizedwork.spock.extensions.TempDirectory
 import nebula.test.IntegrationSpec
-import nebula.test.functional.ExecutionResult
 import org.ajoberstar.grgit.Grgit
 
 /**
@@ -30,11 +28,11 @@ class ChangelogReleaseIntegrationTest extends IntegrationSpec {
     Grgit git
 
     // we need a dummy "remote" repository
-    @TempDirectory(clean = false)
-    protected File remoteDir
+    protected File remoteDir = new File("build/test").getCanonicalFile()
 
     // create an git based project with a changelog.md file
     def setup() {
+        remoteDir.mkdirs()
         Grgit.init(dir: remoteDir, bare: true)
 
         git = Grgit.init(dir: projectDir)
@@ -46,7 +44,7 @@ class ChangelogReleaseIntegrationTest extends IntegrationSpec {
                     |* Bugfixes from hell
                     '''.stripMargin()
         git.remote.add(name: 'origin', url: remoteDir)
-        new File(projectDir, '.gitignore') << '.gradle-test*'
+        new File(projectDir, '.gitignore') << '.gradle-test*' << '\n' << '.gradle'
         git.add(patterns: ["."])
         git.commit(message: 'initial commit')
         git.tag.add(name: '0.2.0')
