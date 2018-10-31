@@ -18,7 +18,7 @@
 package com.emetriq.gradle.plugin.changelog
 
 import nebula.plugin.release.ReleasePlugin
-import org.ajoberstar.gradle.git.release.base.ReleasePluginExtension
+import nebula.plugin.release.git.base.ReleasePluginExtension
 import org.ajoberstar.grgit.Grgit
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
